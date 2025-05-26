@@ -17,7 +17,7 @@ class Student:
         self.name = name
         self.grades = []
         self.is_passed = False
-        self.honor = False
+        self.honor_roll = False
         self.letter_grade = "N/A"
 
     def add_grade(self, grade):
@@ -39,9 +39,10 @@ class Student:
     def determine_letter_grade(self):
         """
         Determine and store the letter grade based on average.
-        Also updates pass/fail status.
+        Also updates pass/fail and honor roll status.
         """
         average = self.calc_average()
+
         if average >= 90:
             self.letter_grade = "A"
         elif average >= 80:
@@ -54,12 +55,36 @@ class Student:
             self.letter_grade = "F"
 
         self.is_passed = average >= 60
+        self.honor_roll = average >= 90
         return self.letter_grade
 
+    def remove_grade_by_value(self, value):
+        """
+        Remove the first occurrence of a grade by its value.
+        If the value does not exist, prints a warning.
+        """
+        try:
+            self.grades.remove(value)
+            print(f"Grade {value} removed.")
+        except ValueError:
+            print(f"Grade value '{value}' not found. Cannot remove.")
+
+    def remove_grade_by_index(self, index):
+        """
+        Remove a grade by its index in the list.
+        If the index is invalid, prints a warning.
+        """
+        try:
+            removed = self.grades.pop(index)
+            print(f"Grade at index {index} ({removed}) removed.")
+        except IndexError:
+            print(f"Index {index} is out of bounds. Cannot remove grade.")
+
     def report(self):
-        """Print a summary report for the student."""
+        """Print a detailed report of the student's academic status."""
         average = self.calc_average()
         self.determine_letter_grade()
+
         print("\n📄 Student Report")
         print(f"ID: {self.student_id}")
         print(f"Name: {self.name}")
@@ -67,20 +92,48 @@ class Student:
         print(f"Average Grade: {average:.2f}")
         print(f"Letter Grade: {self.letter_grade}")
         print(f"Status: {'Passed' if self.is_passed else 'Failed'}")
+        print(f"Honor Roll: {'Yes' if self.honor_roll else 'No'}")
+
+    def summary(self):
+        """Generate and return a formatted summary string for the student."""
+        average = self.calc_average()
+        self.determine_letter_grade()
+
+        return (
+            f"📊 Summary for {self.name} (ID: {self.student_id})\n"
+            f" - Grades Count: {len(self.grades)}\n"
+            f" - Average Grade: {average:.2f}\n"
+            f" - Letter Grade: {self.letter_grade}\n"
+            f" - Pass Status: {'Passed' if self.is_passed else 'Failed'}\n"
+            f" - Honor Roll: {'Yes' if self.honor_roll else 'No'}"
+        )
+
 
 def main():
-    """Demonstrate the functionality with sample data."""
+    """Test function to demonstrate the Student system."""
     try:
-        student_a = Student("123", "Alice")
+        student_a = Student("001", "Alice")
+
+        # Adding grades
         student_a.add_grade(95)
-        student_a.add_grade(88.5)
-        student_a.add_grade(-10)     # Invalid
-        student_a.add_grade("A+")    # Invalid
-        student_a.add_grade(101)     # Invalid
-        student_a.determine_letter_grade()
+        student_a.add_grade(88)
+        student_a.add_grade(76.5)
+        student_a.add_grade("Ninety")  # Invalid
+        student_a.add_grade(-5)        # Invalid
+
+        # Removing grades
+        student_a.remove_grade_by_index(2)
+        student_a.remove_grade_by_value(88)
+        student_a.remove_grade_by_value(100)  # Doesn't exist
+        student_a.remove_grade_by_index(10)   # Out of bounds
+
+        # Reports
         student_a.report()
+        print("\n" + student_a.summary())
+
     except ValueError as err:
         print(f"Error creating student: {err}")
+
 
 if __name__ == "__main__":
     main()
